@@ -1,0 +1,18 @@
+name: emcli
+channels:
+  - defaults
+dependencies: # tested on WSL with Ubuntu 18.04
+  - pytorch:pytorch
+  - pytorch:torchvision
+  - pytorch:cudatoolkit=11.3
+  - python # =3.10.6
+  - numpy # Tested with 1.19.2
+  - pandas # 1.2.1
+  - scikit-learn # 0.23.2
+  - matplotlib # 3.3.2
+  - tqdm # 4.55.1
+  - jupyterlab # 3.2.4
+  - scikit-image
+  - pip
+  - pip:
+    - scikit-optimize # 0.8.1
