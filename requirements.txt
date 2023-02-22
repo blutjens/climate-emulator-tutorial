@@ -1,5 +1,2 @@
-pytorch
-scikit-image
-scikit-optimize
 cartopy
 xarray
