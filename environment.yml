@@ -1,3 +1,4 @@
+# todo: Delete this file after requirements.txt has been tested.
 name: emcli
 channels:
   - defaults

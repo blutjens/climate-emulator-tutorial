@@ -1,0 +1,89 @@
+Building Fast Surrogates in Weather and Climate Modeling
+--------------------------------------------------------
+
+Decision-makers rely on weather and climate models to understand and plan for weather extremes. 
+
+Due to the computational expense, however, these models require inaccessible supercomputer infrastructures for computing updated weather forecasts or ensemble runs of possible climate policies. 
+
+The crux of the computational complexity is that the underlying differential equations have to be solved for every set of initial conditions 'from scratch'.
+
+Researchers have recently created machine learning (ML)-based 'surrogates' that can predict weather in seconds rather than hours. The idea behind surrogates is to train ML models on large databases of simulated data. After training, the model has memorized how to solve the differential equations and can be quickly run for updated parameters or initial conditions. 
+
+With the impressive runtime decrease in weather modeling, surrogates have attracted attention across the Earth sciences and, due to high-dimensionality and physical structure, also the machine learning community.
+
+Unfortunately, getting started with developing surrogates is challenging for both communities due to the plethora of machine learning architectures, such as CNNs, GNNs, LSTMs, Transformers, and the inaccessibility of datasets, respectively. 
+
+This tutorial will highlight data formatting requirements, model choices, and common pitfalls for getting started with ML-based surrogates in the Earth Sciences. The tutorial will first demonstrate how to create a pure ML-based surrogate (e.g., UNet) on an easily accessible, real-world, weather dataset, such as SEVIR, and then demonstrate a hybrid-ML-physics model on a common simulated dataset, such as incompressible Raynolds-averaged Navier-Stokes equation.
+
+mark.veillette@ll.mit.edu 
+--
+1. Target Audience *
+Kindly specify the intended audience for the tutorial. Please be as specific as possible, and feel free to elaborate on expected background and learning goals.
+
+The tutorial will target two groups. The first are domain scientists, including but not limited to Earth system modelers and Earth scientists, that intend to experiment with machine learning for sensitivity analyses, parameter exploration, real-time inference. They are expected to have familiarity with Python, numerical modeling, and basic surrogates that are tought in Science curricula, such as EMD/PCA-based method. The scientists are expected to walk away with a clarification on where ML can be useful, data expectations, and model choices.
+
+The second group are students in machine learning that are looking for time-series, video, or real-world datasets that introduce challenges in high-dimensionality and physical structure. They are expected to have familiarity with Python, pytorch, and implementing ML models. The students will walk away with a notebook on how to access a train a baseline pure and hybrid ML model on a common weather/climate dataset. 
+
+Other ML tasks in Earth Science, such as downscaling or data assimilation will be briefly mentioned during the tutorial, but the code section of the tutorial will focus on surrogate modeling.
+
+2. ML Difficulty Level *
+
+Beginner (requires little to no background in ML)
+Intermediate (requires knowledge of basic/classical ML concepts)
+xxx
+Advanced (requires knowledge of advanced ML/DL concepts)
+3. Climate Difficulty Level *
+Please select one of the options below.
+Beginner (requires little to no background in climate change)
+xxx
+Intermediate (requires some knowledge of climate-relevant field-specific concepts)
+Advanced (requires knowledge of advanced climate-relevant field-specific concepts)
+4. Prerequisites *
+Briefly specify the prerequisites and basic knowledge required for the users to follow the tutorial.
+Experience in Python. The tutorial will assume basic familiarity with pytorch and having vague familiarity with numerical modeling. The tutorial will use domain specific processing libraries, such as xarray, but does not assume familiarity with them.
+
+5. Programming Language *
+Python
+
+7. Highlighted Tools *
+Kindly specify the tools, such as libraries, packages, services, datasets, or frameworks, that you would like to highlight in the tutorial, e.g. NetworkX, DEAP, Earth Engine. Feel free to include link(s), if necessary.
+pytorch, xarray, pytorch.models, numpy, pandas
+
+8. Statement of Qualifications *
+Kindly state your qualifications and specific expertise related to the proposed tutorial topics.
+The first author is a senior graduate student that is focusing on physics-informed machine learning and the application to Earth system models. The author has co-taught a Summer school on computer vision for Ecology and is familiar with teaching ML to domain scientists. The second author is a research scientist that came from a PhD in Mathematics to demonstrating ML methods on weather datasets. He has published about weather in NeurIPS datasets and designed a preliminary version of this tutorial for a university class. 
+
+9. Code Repositories *
+Please provide link(s) to code repositories (e.g. GitHub, Bitbucket, GitLab), portfolios, or project links showcasing ML projects you have done in the past.
+https://github.com/MIT-AI-Accelerator/sevir_challenges/blob/main/radar_nowcasting/RadarNowcastBenchmarks.ipynb
+
+10. Professional Experience *
+Please provide link(s) to a personal website, LinkedIn page, Google Scholar page, ResearchGate profile, and/or CV.
+https://blutjens.github.io/
+https://scholar.google.com/citations?hl=en&user=Ez0nHbQAAAAJ&view_op=list_works&sortby=pubdate
+
+11. Statement of Commitment *
+If accepted, I understand that I will be expected to spend around 5 hours/week on tutorial development over the period August 25 - November 10.
+
+I agree
+12. Additional Comments *
+Please provide any additional comments here.
+
+
+--
+Clarification:
+- Model is ground-truth
+Research goal:
+- Goal is to increase speed, sacrificing accuracy. For example, 90% accurate, but 10-times faster
+- Model has high runtime complexity. Not obvious. Has quadratic or higher runtime complexity or high constant runtime. 
+- Model does not need be differentiable.
+
+Dataset creation:
+- Need all parameters and forcings to run the model on the same spatio-temporal grid.
+- Need careful train/test split across parameters and/or forcings. With real-world data forcings are challenging to disentangle. Instead split across space or time.
+- Want model runs/outputs at highest spatiotemporal resolution. 
+
+Related tutorials:
+Physics-inspired deep learning
+- https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/DL2/Dynamical_Neural_Networks/Complete_DNN_2_2.html
+
