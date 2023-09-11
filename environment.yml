@@ -17,6 +17,7 @@ dependencies: # tested on WSL with Ubuntu 18.04
   # pip install tqdm
   # pip install ipywidgets
   # python -m ipykernel install --user --name=emcli
+  # pip install -e .
 
 
   - pytorch:pytorch

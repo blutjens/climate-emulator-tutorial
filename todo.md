@@ -2,7 +2,7 @@
 
 [] test environment.yml
 [x] download data locally to avoid google colab...
-[] declutter notebook by moving autoregressiveDataset and unet_model into python files
+[x] declutter notebook by moving autoregressiveDataset and unet_model into python files
 [] data exploration:
     [] plot pixel wise frequency of TAS values
         - calculate running sum of histogram over all images TAS images
