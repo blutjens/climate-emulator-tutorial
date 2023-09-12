@@ -16,6 +16,9 @@ dependencies: # tested on WSL with Ubuntu 18.04
   # pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
   # pip install tqdm
   # pip install ipywidgets
+  # pip install hvplot # to create interactive plots nicely integrated with xarray
+  # pip install jupyter_bokeh # to make hvplot run
+  # pip install geoviews # to create geospatial plots in hvplot
   # python -m ipykernel install --user --name=emcli
   # pip install -e .
 

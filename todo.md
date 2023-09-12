@@ -4,7 +4,11 @@
 [x] download data locally to avoid google colab...
 [x] declutter notebook by moving autoregressiveDataset and unet_model into python files
 [] data exploration:
-    [] plot pixel wise frequency of TAS values
+    [x] plot pixel wise frequency of TAS values
         - calculate running sum of histogram over all images TAS images
+    [x] plot tas histogram in test set
     [] plot accuracy (y-axis) over pixel-wise binned TAS prediction value, where TAS prediction values are ordered according to frequency (or TAS if TAS itself is Gaussian distributed)
-    [] plot all 740 training data samples. I want to know if I can learn as a human how to do the prediction task. 
+    [x] plot all 740 training data samples. I want to know if I can learn as a human how to do the prediction task. 
+        [] find out why 'tas' runs from -3 to +5? Am I plotting delta tas? But at which point have I dont the conversion.
+        [] plot spatially-resolved 20year average tas on right and global co2 concentrations over time on left. The question is if I can see a mapping in between the co2 and local tas values?
+    [] create scatterplot of co2 to each pixel? to see if co2 relates locally linearly to tas
