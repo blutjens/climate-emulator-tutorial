@@ -5,6 +5,7 @@
 [x] declutter notebook by moving autoregressiveDataset and unet_model into python files
 [] data exploration:
 	[] get so2 and bc -- where are they?
+	[] plot ch4, so2, and bc over time like climatebench fig1 
     [x] plot pixel wise frequency of TAS values
         - calculate running sum of histogram over all images TAS images
     [x] plot tas histogram in test set
@@ -16,5 +17,7 @@
 
 model development
 	[] FaiRGP: map annual cum. CO2 emissions + (CH4,SO2,BC) emissions at time t to global T or local T
-		(issue: natural variability where cum. co2 is constant, but T is not) 
 	[] ClimateBench: map global cum. CO2 emissions + global CH4 emis. + spatially-resolved annual (SO2,BC) at time t to local T
+	[] Linear: map annual cum. CO2 emission + (CH4,SO2,BC) emissions at time t to global T.
+		then map global T to local T
+	[] Nat-Var-FCNN: map 10yr cum. co2 + (CH4, SO2, BC) time-series to 10 yr avg local T) 
