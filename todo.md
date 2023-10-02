@@ -4,8 +4,11 @@
 [x] download data locally to avoid google colab...
 [x] declutter notebook by moving autoregressiveDataset and unet_model into python files
 [] data exploration:
+    [] How to deal with internal variability?
+        [] could smoothen global T and then map co2 onto global T
     [] When does the linear pattern scaling break down?
         [] In which regions does the linear pattern scaling break down?
+            [] create 2D map plot of (pattern scaling - ground-truth local tas) on the avg in 2080-2100.
 	    [] Does the linear assumption break down during rare events?
         could plot accuracy (y-axis) over pixel-wise binned TAS prediction value, where TAS prediction values are ordered according to frequency (or TAS if TAS itself is Gaussian distributed)
     [] get so2 and bc -- where are they?
