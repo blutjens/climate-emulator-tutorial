@@ -16,7 +16,7 @@
     [] create scatterplot of co2 to each pixel? to see if co2 relates locally linearly to tas
 
 model development
-	[] FaiRGP: map annual cum. CO2 emissions + (CH4,SO2,BC) emissions at time t to global T or local T
+	[] FaiRGP: map annual cum. CO2 emissions + (CH4,SO2,BC) emissions at time t to global T; then map global T local T
 	[] ClimateBench: map global cum. CO2 emissions + global CH4 emis. + spatially-resolved annual (SO2,BC) at time t to local T
 	[] Linear: map annual cum. CO2 emission + (CH4,SO2,BC) emissions at time t to global T.
 		then map global T to local T
