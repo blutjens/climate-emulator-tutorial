@@ -28,30 +28,32 @@ def plot_tas_annual_local_err_map(tas_true, tas_pred):
     err_pattern_scaling = tas_pred_t_avg - tas_true_t_avg
 
     # Create figure with PlateCarree projection
-    fig, axs = plt.subplots(1, 3, figsize=(12, 9), subplot_kw=dict(projection=ccrs.PlateCarree()))
+    fig, axs = plt.subplots(1, 3, figsize=(12, 9), 
+        subplot_kw=dict(projection=ccrs.PlateCarree()),
+        dpi=300)
 
     # Plot ground-truth surface temperature anomalies
     cnorm = colors.TwoSlopeNorm(vmin=tas_true_t_avg.min(), vcenter=0, vmax=tas_true_t_avg.max()) # center colorbar around zero
     mesh = axs[0].pcolormesh(lon, lat, tas_true_t_avg.data, cmap='coolwarm',norm=cnorm)
-    cb = plt.colorbar(mesh, ax=axs[0], orientation='horizontal', shrink=0.95, pad=0.05)
-    cb.set_label('True surface temperature anomalies, \naveraged over 2080-2100 in °C')
-    cb.ax.set_xscale('linear')
+    cbar = plt.colorbar(mesh, ax=axs[0], orientation='horizontal', shrink=0.95, pad=0.05)
+    cbar.set_label('True surface temperature anomalies, \naveraged over 2080-2100 in °C')
+    cbar.ax.set_xscale('linear')
     axs[0].coastlines()
 
     # Plot predicted surface temperature anomalies
     mesh = axs[1].pcolormesh(lon, lat, tas_pred_t_avg.data, cmap='coolwarm',norm=cnorm)
-    cb = plt.colorbar(mesh, ax=axs[1], orientation='horizontal', shrink=0.95, pad=0.05)
-    cb.set_label('Predicted surf. temp. anom., \navg 2080-2100 in °C')
-    cb.ax.set_xscale('linear')
+    cbar = plt.colorbar(mesh, ax=axs[1], orientation='horizontal', shrink=0.95, pad=0.05)
+    cbar.set_label('Predicted surf. temp. anom., \navg 2080-2100 in °C')
+    cbar.ax.set_xscale('linear')
     axs[1].coastlines()
 
     # Plot error of pattern scaling
     bounds = np.hstack((np.linspace(err_pattern_scaling.min(), -0.25, 5), np.linspace(0.25, err_pattern_scaling.max(), 5)))
     divnorm = colors.BoundaryNorm(boundaries=bounds, ncolors=256)
     mesh = axs[2].pcolormesh(lon, lat, err_pattern_scaling.data, cmap='coolwarm', norm=divnorm)
-    cb = plt.colorbar(mesh, ax=axs[2], orientation='horizontal', shrink=0.95, pad=0.05)
-    cb.set_label('Error (pred-target) in surf. temp. \nanom. avg 2080-2100 in °C')
-    cb.ax.set_xscale('linear')
+    cbar = plt.colorbar(mesh, ax=axs[2], orientation='horizontal', shrink=0.95, pad=0.05)
+    cbar.set_label('Error (pred-target) in surf. temp. \nanom. avg 2080-2100 in °C')
+    cbar.ax.set_xscale('linear')
     axs[2].coastlines()
     
     return axs

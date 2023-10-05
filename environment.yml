@@ -20,7 +20,7 @@ dependencies: # tested on WSL with Ubuntu 18.04
   # pip install jupyter_bokeh # to make hvplot run
   # pip install geoviews # to create geospatial plots in hvplot
   # pip install scikit-learn
-  # pip install wandb
+  # pip install regionmask
   # python -m ipykernel install --user --name=emcli
   # pip install -e .
 
