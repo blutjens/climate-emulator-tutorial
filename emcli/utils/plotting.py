@@ -17,8 +17,12 @@ def plot_tas_annual_local_err_map(tas_true, tas_pred):
         axs: matplotlib axes object
     """
     # Get coordinates
-    lon = tas_true.longitude.data
-    lat = tas_true.latitude.data
+    try:
+        lon = tas_true.longitude.data
+        lat = tas_true.latitude.data
+    except:
+        lon = tas_true.lon.data
+        lat = tas_true.lat.data
 
     # Compute temporal average of target and prediction over evaluation timeframe
     tas_true_t_avg = tas_true.sel(time=slice("2081", "2100")).mean(dim="time")

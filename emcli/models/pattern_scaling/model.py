@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 class PatternScaling(object):
     """
@@ -59,3 +61,80 @@ class PatternScaling(object):
         preds = np.polyval(self.coeffs, in_global) # (n_t, n_lat, n_lon)
 
         return preds
+
+def fit_linear_regression_global_global(
+    data_dir='data/interim/global_global/train/', 
+    plot=False):
+    """
+    Fits a linear regression model from globally-averaged GHG
+    forcings at t to global average variables at t. E.g.,
+    global co2 at t -> global tas at t. Accepts multiple in-/
+    and output channels.
+
+    Args:
+        data_dir str: Path to directory with input and target data. See 
+            emcli.dataset.interim_to_processed.interim_to_global_global for
+            data format.
+        plot bool: if True, plots training data and fit.
+    Returns:
+        model sklearn.LinearRegression: linear regression model fit to data.
+    """
+    # Load processed data
+    input = np.load(data_dir + 'input.npy') # (n_samples, in_channels, lat, lon)
+    target = np.load(data_dir + 'target.npy')  # (n_samples, out_channels, lat, lon)
+    
+    # Process data for linear regression
+    input_lr = np.reshape(input, input.shape[:2]) # (n_samples, in_channels)
+    target_lr = np.reshape(target, target.shape[:2]) # (n_samples, out_channels)
+
+    # Initialize and fit a LinearRegression model
+    model = LinearRegression()
+    model.fit(input_lr, target_lr)
+
+    if plot:
+        fig, axs = plt.subplots(1,1, figsize =(4,4))
+        axs.plot(input_lr, target_lr, '.', label='train')
+        axs.plot(input_lr, model.predict(input_lr), color='black', label='pred')
+        axs.set_xlabel("input")
+        axs.set_ylabel("target")
+        axs.set_title("Linear Regression on train data")
+        axs.legend()
+
+    return model
+
+def predict_linear_regression_global_global(model, 
+    data_dir='data/interim/global_global/test/',
+    plot=False):
+    """
+    Predict linear regression model on global-averages variables
+    to global average variables.
+    Args:
+        model sklearn.LinearRegression model
+        data_dir str: Path to directory with input and target data. See 
+            emcli.dataset.interim_to_processed.interim_to_global_global for
+            data format.
+        plot bool: if True, plots test data and fit.
+    Returns
+        preds np.array(n_samples,out_channels): predictions
+    """
+    # Load processed data
+    input_test = np.load(data_dir + 'input.npy') # (n_samples, in_channels, lat, lon)
+    target_test = np.load(data_dir + 'target.npy')  # (n_samples, out_channels, lat, lon)
+
+    # Process data for linear regression
+    input_test_lr = np.reshape(input_test, input_test.shape[:2]) # (n_samples, in_channels)
+    target_test_lr = np.reshape(target_test, target_test.shape[:2]) # (n_samples, out_channels)
+    
+    # Predict linear regression model on test data
+    preds = model.predict(input_test_lr)
+    
+    if plot:
+        fig, axs = plt.subplots(1,1, figsize =(4,4))
+        axs.plot(input_test_lr, target_test_lr, '.', label='true')
+        axs.plot(input_test_lr, preds, color='black', label='pred')
+        axs.set_xlabel("input")
+        axs.set_ylabel("target")
+        axs.set_title("Linear regression on test data")
+        axs.legend()
+
+    return preds

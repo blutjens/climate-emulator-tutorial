@@ -19,6 +19,7 @@ outputs - batch, c, lat, lon
     e.g., local state at t
     e.g., local state at t+3
 """
+from pathlib import Path
 import numpy as np
 
 def calculate_global_weighted_average(xr_data):
@@ -89,7 +90,8 @@ def average_globally_and_stack_in_time_and_channel(xr_list_of_datasets, keys):
 
 def interim_to_global_global(X_global_local, Y_global_local,
   input_keys=['CO2'],
-  target_keys=['tas']):
+  target_keys=['tas'],
+  save_dir='data/processed/global_global/'):
   """
   Reshapes the interim dataset to map global averages at t to 
   global averages at t, e.g., cum. co2 at t -> globally 
@@ -104,13 +106,13 @@ def interim_to_global_global(X_global_local, Y_global_local,
       locally-resolved surface temperature field of multiple scenarios
     input_keys list(str): List of data keys that are used as input
     target_keys list(str): list of data keys that are used outputs
+    save_dir str: directory path for storing files
   Returns:
-    data: list(
-      'input': np.array(n_samples, in_channels, 1, 1) # input
+    input : np.array(n_samples, in_channels, 1, 1) # input
         global forcings at t, e.g., cum. co2, ch4, and 
-        globally averaged bc and so2 at t
-      'target': np.array(n_samples, out_channels, 1, 1) # target global state at t, 
-        e.g., globally-average temperature
+        globally averaged bc and so2 at t. Saved at save_dir/input.py
+    target: np.array(n_samples, out_channels, 1, 1) # target global state at t, 
+        e.g., globally-average temperature. Saved at save_dir/target.npy
 	"""
   n_scenarios = len(X_global_local)
   
@@ -123,13 +125,22 @@ def interim_to_global_global(X_global_local, Y_global_local,
   # Check that in/outputs have same number of tsteps
   assert input.shape[0] == target.shape[0], 'Error: inputs and target have different number of time steps'
 
-  # Create list of time steps. Every time step contains one data dictionary.
-  data = []
-  n_tsteps = input.shape[0]
-  for t in range(n_tsteps):
-    data.append({'input': input[t,...], 'target': target[t,...]})
+  # Store input and target files as .npy
+  print('Saving processed data at: ', save_dir)
+  Path(save_dir).mkdir(parents=True, exist_ok=True)
+  np.save(save_dir + 'input.npy', input)
+  np.save(save_dir + 'target.npy', target)
 
-  return data
+  # Deprecated: Create list of time steps. Every time step contains one data dictionary.
+  # data: list(
+  #    'input': np.array(n_samples, in_channels, 1, 1) 
+  #    'target': np.array(n_samples, out_channels, 1, 1) 
+  # data = []
+  # n_tsteps = input.shape[0]
+  # for t in range(n_tsteps):
+  #   data.append({'input': input[t,...], 'target': target[t,...]})
+
+  return input,target
 
 def interim_to_pushforward(X_global, Y_local, 
 	n_t_pushforward=3,
