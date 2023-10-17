@@ -4,15 +4,41 @@
 model development
     [x] download data locally to avoid google colab...
     [x] declutter notebook by moving unet_model into python files
-    [x] declutter climate-emulator-tutorial notebook by moving normalize, autoregressive dataset into python files -> done.
+    [x] declutter climate-emulator-tutorial notebook by moving normalize to python files
+    [] declutter tutorial by moving autoregressive dataset into python files
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
         [] rewrite dataloader, s.t., the explore_data scipt saves an ML-ready dataset in processed/. The train.py then takes in a path to that dataset and creates a dataloader.
         [] rewrite criterion s.t., it's an argument in cfg
         [] maybe get rid of click.
-    [] FaiRGP: map annual cum. CO2 emissions + (CH4,SO2,BC) emissions at time t to global T; then map global T to local T
+    [] im optimizing too much at the same time. What do I want to do first?
+        [x] map global cum. co2, ch4, bc, and so2 at t to global T at t
+            reshape into list of data samples or large numpy array?
+                numpy array easy for linear regression.
+                list easy for fcnn data loader
+                -> do a list and write linear regression to pull all data first.
+                WHY IS THIS SO COMPLICATED?!
+                    i have multiple scenarios who's information i dont want to lose
+                    i have multiple timestamps who's information i dont want to lose.
+                    **i need to find a library for processing video data?**
+    [] write extensible code for ghg -> cmip output mapping
+        write it as dataset_utils: interim_to_processed.py
+        inputs - batch, c, h, w
+            e.g., global cum. co2, ch4, bc, so2 at t
+            e.g., global cum. co2, ch4 and local bc, so2 at t
+            (e.g., global cum. co2, ch4 over t-10:t and local bc, so2)
+            e.g., global cum. co2, ch4, local bc, so2 at t and 
+                local T, huss, ps at t-1
+            e.g., global cum. co2, ch4, local bc, so2 at t and
+                local T, huss, ps at t-3:t-1
+        outputs - batch, c, h, w
+            e.g., global T at t
+            e.g., local T at t
+            e.g., local T, huss, ps at t
+            e.g., local T, huss , ps at t+3
+    [] can ML do at least as good as current emulators?    
+        [] *Linear: map annual cum. CO2 emission + (CH4,SO2,BC) emissions at time t linearly to global T at t. then map global T to local T*
+        [] FaiRGP: map annual cum. CO2 emissions + (CH4,SO2,BC) emissions at time t to global T; then map global T to local T
     [] ClimateBench: map global cum. CO2 emissions + global CH4 emis. + spatially-resolved annual (SO2,BC) at time t to local T
-    [] Linear: map annual cum. CO2 emission + (CH4,SO2,BC) emissions at time t to global T.
-        then map global T to local T
     [] Nat-Var-FCNN: map 10yr cum. co2 + (CH4, SO2, BC) time-series to 10 yr avg local T) 
 
 [] data exploration:
