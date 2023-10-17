@@ -5,7 +5,7 @@ model development
     [x] download data locally to avoid google colab...
     [x] declutter notebook by moving unet_model into python files
     [x] declutter climate-emulator-tutorial notebook by moving normalize to python files
-    [] declutter tutorial by moving autoregressive dataset into python files
+    [x] declutter tutorial by moving autoregressive dataset into python files
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
         [] rewrite dataloader, s.t., the explore_data scipt saves an ML-ready dataset in processed/. The train.py then takes in a path to that dataset and creates a dataloader.
         [] rewrite criterion s.t., it's an argument in cfg
