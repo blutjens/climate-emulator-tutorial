@@ -66,26 +66,30 @@ def normalize_data_arr(data_arr, meanstd, keys=['CO2', 'CH4', 'SO2', 'BC']):
         data_arr_norm.append(data)
     return data_arr_norm
 
-def load_climatebench_train_data(
+def load_climatebench_data(
     simus = ['ssp126','ssp370','ssp585','hist-GHG','hist-aer'],
     len_historical = 165,
-    data_path = 'data/'):
+    data_path = 'data/',
+    avg_over_ensemble = True):
     """ Load ClimateBench Training Data
     Loads the scenario passed in <simus> from data_path into memory. 
     The data from scenarios, e.g., ssp126 is concatenated with historical 
     data.
+    Args:
+        avg_over_ensemble bool: If True, will return average over ensemble
+            members in dataset.
     Returns:
-        X_train list(xarray.Dataset[len_historical (+ len_future), lon, lat]) 
+        inputs list(xarray.Dataset[len_historical (+ len_future), lon, lat]) 
             with CO2, SO2, CH4, BC in float64
-        Y_train list(xarray.Dataset[len_historical (+ len_future), lon, lat]) 
+        targets list(xarray.Dataset[len_historical (+ len_future), lon, lat]) 
             with diurnal_temperature_range & tas in float32 and pr & pr90 in float64
     """
     # to-do: load only co2 and temp
     #        make possible to load rest later on
     # do lazy loading to highlight benefit of netCDF
 
-    X_train = []
-    Y_train = []
+    inputs = []
+    targets = []
 
     for i, simu in enumerate(simus):
 
@@ -97,29 +101,38 @@ def load_climatebench_train_data(
             input_xr = xr.open_dataset(data_path + input_name)
 
             # load outputs
-            output_xr = xr.open_dataset(data_path + output_name).mean(dim='member')
-            output_xr = output_xr.assign({"pr": output_xr.pr * 86400,
-                                        "pr90": output_xr.pr90 * 86400}).rename({'lon':'longitude',
-                                                                                'lat': 'latitude'}).transpose('time','latitude', 'longitude').drop(['quantile'])
+            output_xr = xr.open_dataset(data_path + output_name)
 
         # Concatenate with historical data in the case of scenario 'ssp126', 'ssp370' and 'ssp585'
         else:
             # load inputs
-            input_xr = xr.open_mfdataset([data_path + 'inputs_historical.nc',
-                                        data_path + input_name]).compute()
+            input_paths = [data_path + 'inputs_historical.nc', # ground-truth historical data, e.g., (165,)
+                           data_path + input_name] # future data, e.g., (86,)
+            input_xr = xr.open_mfdataset(input_paths).compute() 
 
-            # load outputs
-            output_xr = xr.concat([xr.open_dataset(data_path + 'outputs_historical.nc').mean(dim='member'),
-                                xr.open_dataset(data_path + output_name).mean(dim='member')],
-                                dim='time').compute()
-            output_xr = output_xr.assign({"pr": output_xr.pr * 86400,
-                                        "pr90": output_xr.pr90 * 86400}).rename({'lon':'longitude',
-                                                                                'lat': 'latitude'}).transpose('time','latitude', 'longitude').drop(['quantile'])
+            # load outputs, taking average across ensemble members
+            output_paths = [data_path + 'outputs_historical.nc',
+                            data_path + output_name]
+            output_xr = xr.open_mfdataset(output_paths)
+
+        # Process precipitations
+        output_xr = output_xr.assign({"pr": output_xr.pr * 86400,
+                                    "pr90": output_xr.pr90 * 86400})
+        output_xr = output_xr.drop(['quantile'])
+        # Process dimensions
+        output_xr = output_xr.rename({'lon':'longitude', 'lat': 'latitude'})
+        if avg_over_ensemble:
+            # Average over ensemble members
+            output_xr = output_xr.mean(dim='member')
+            output_xr = output_xr.transpose('time','latitude', 'longitude')
+        else:
+            output_xr = output_xr.transpose('member', 'time','latitude', 'longitude')
+        output_xr = output_xr.compute() # load into memory
 
         print(input_xr.dims, simu)
 
         # Append to list
-        X_train.append(input_xr)
-        Y_train.append(output_xr)
+        inputs.append(input_xr)
+        targets.append(output_xr)
 
-    return X_train, Y_train
+    return inputs, targets
