@@ -3,7 +3,7 @@ Webapp to host climate emulator. From anthropogenic greenhouse gases
  to surface temperature anomalies.
 
 Call via 
-$ streamlit run notebooks/run_climate_pocket_webapp.py
+$ streamlit run run_climate_pocket_webapp.py
 """
 from pathlib import Path
 import numpy as np
@@ -70,7 +70,7 @@ def load_data():
 cache = load_data()
 
 # Create a slider retrieve input selection, e.g., global co2
-co2_selected = st.slider('Select the cumulative CO2 emissions (GtCO2)', cache['co2min'], cache['co2max'], cache['co2max'])
+co2_selected = st.slider('### Cumulative CO2 emissions (GtCO2)', cache['co2min'], cache['co2max'], cache['co2max'])
 
 # Map selected global co2 from input onto global tas
 co2_selected = np.array([[co2_selected,]])# (n_time,in_channels)
@@ -86,8 +86,8 @@ diff = preds - cache['tas_baseline']
 
 # Plot ground-truth surface temperature anomalies using cartopy
 st.write(f"""
-### Global temperature increase:
-### Predicted: {preds_global_tas[0]:.2f}°C vs. Baseline:  {cache['tas_global_baseline']:.2f}°C 
+#### Global temperature increase:
+#### Predicted: {preds_global_tas[0]:.2f}°C vs. Baseline:  {cache['tas_global_baseline']:.2f}°C 
 """)
 cnorm = colors.TwoSlopeNorm(vmin=cache['tasmin'], vcenter=0, vmax=cache['tasmax']) # center colorbar around zero
 mesh = cache['axs'].pcolormesh(cache['lon'], cache['lat'], diff, cmap='coolwarm',norm=cnorm)

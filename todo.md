@@ -23,7 +23,7 @@ demo development
         [] plot co2 emission curve
     [] host on external webpage
         [] write requirements.txt that installs all dependencies
-        [] 
+    [] add ch4, etc. as optional arguments at the bottom
 model development
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
         [] rewrite dataloader, s.t., the explore_data scipt saves an ML-ready dataset in processed/. The train.py then takes in a path to that dataset and creates a dataloader.
