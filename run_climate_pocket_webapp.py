@@ -17,7 +17,10 @@ from emcli.dataset.climatebench import load_climatebench_data
 import emcli.models.pattern_scaling.model as ps
 from emcli.dataset.interim_to_processed import calculate_global_weighted_average
 
-RUN_OFFLINE = False
+# If True, loads raw climatebench data and stores a compressed
+#  version that can be stored on git and loaded on webapp
+# If False, load processed compressed data. Set False for deployment.
+RUN_OFFLINE = False 
 
 st.write("""
 # BC3 Climate Pocket

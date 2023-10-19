@@ -21,13 +21,14 @@ demo development
     [] use co2 emission curve.
         [] create co2(t) = by piecewise linear interpolation of co2(ssp127,ssp585(t))
         [] plot co2 emission curve
-    [] host on external webpage
+    [x] host on external webpage
         [x] write requirements.txt that installs all dependencies
         [x] create dummy github. Find dummy email address that doesnt have a github -> using @climate-viz
-        [] debug streamlit build
-            [] streamlit needs climatebench data
+        [x] debug streamlit build
+            [x] streamlit needs climatebench data
                 either download data files during build
                 or reduce  data files. 
+        ->>> accessible on https://climate-emulator-tutorial.streamlit.app/
     [] add ch4, etc. as optional arguments at the bottom
 model development
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
