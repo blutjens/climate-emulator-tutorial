@@ -1,2 +1,18 @@
+numpy
+matplotlib
+tqdm
 cartopy
 xarray
+# notebook
+netcdf4
+dask
+# bottleneck
+# torch torchvision --index-url https://download.pytorch.org/whl/cpu
+tqdm
+# ipywidgets
+# hvplot # to create interactive plots nicely integrated with xarray
+# jupyter_bokeh # to make hvplot run
+# geoviews # to create geospatial plots in hvplot
+scikit-learn
+# regionmask
+streamlit

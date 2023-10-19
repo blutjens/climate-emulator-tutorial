@@ -21,6 +21,7 @@ dependencies: # tested on WSL with Ubuntu 18.04
   # pip install geoviews # to create geospatial plots in hvplot
   # pip install scikit-learn
   # pip install regionmask
+  # pip install streamlit
   # python -m ipykernel install --user --name=emcli
   # pip install -e .
 

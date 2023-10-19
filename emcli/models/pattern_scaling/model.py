@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
+import pickle # saving model
+from pathlib import Path
 
 class PatternScaling(object):
     """
@@ -61,6 +63,27 @@ class PatternScaling(object):
         preds = np.polyval(self.coeffs, in_global) # (n_t, n_lat, n_lon)
 
         return preds
+    
+def save(model, 
+         dir='./runs/pattern_scaling/default/models/', 
+         filename='model.pkl'):
+    """
+    Saves model at dir
+    """
+    Path(dir).mkdir(parents=True, exist_ok=True)
+    path = dir + filename
+    with open(path,'wb') as f:
+        pickle.dump(model,f)
+
+def load(dir='./runs/pattern_scaling/default/models/', 
+        filename='model.pkl'):
+    """
+    Loads model from file.
+    """
+    path = dir + filename
+    with open(path, 'rb') as f:
+        model = pickle.load(f)
+    return model
 
 def fit_linear_regression_global_global(
     data_dir='data/interim/global_global/train/', 
