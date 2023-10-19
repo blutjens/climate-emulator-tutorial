@@ -1,5 +1,6 @@
 figures/
 data/
+!data/processed/climatebench/webapp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

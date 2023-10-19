@@ -5,6 +5,7 @@ Webapp to host climate emulator. From anthropogenic greenhouse gases
 Call via 
 $ streamlit run run_climate_pocket_webapp.py
 """
+import pickle # store and load compressed data
 from pathlib import Path
 import numpy as np
 import streamlit as st
@@ -16,16 +17,17 @@ from emcli.dataset.climatebench import load_climatebench_data
 import emcli.models.pattern_scaling.model as ps
 from emcli.dataset.interim_to_processed import calculate_global_weighted_average
 
+RUN_OFFLINE = False
+
 st.write("""
 # BC3 Climate Pocket
 Mapping CO2 to temperature
 """)
 
-
-# Load data into cache
-@st.cache_data
-def load_data():
+# Store compressed version of data that can be loaded on external app
+def store_compressed_data(dir_compressed_data, filename_compressed_data):
     cache = dict()
+
     # Load climatebench data to get dimensions and baseline
     cache['baseline_scenario'] = 'ssp245'
     len_historical = 165
@@ -44,11 +46,34 @@ def load_data():
     cache['co2min'] = X_input[0]['CO2'].min().data.item() # Convert to python 'class' float
     cache['co2max'] = 2 * X_input[0]['CO2'].max().data.item()
 
-
     # Get baseline
     tas_baseline = Y_target[0]['tas'].sel(time=slice("2081", "2100")).mean(dim="time")
     cache['tas_baseline'] = tas_baseline.data
     cache['tas_global_baseline'] = calculate_global_weighted_average(tas_baseline)
+
+    # Store data
+    Path(dir_compressed_data).mkdir(parents=True, exist_ok=True)
+    path = dir_compressed_data + filename_compressed_data
+    with open(path,'wb') as f:
+        pickle.dump(cache,f)
+
+    return cache
+
+# Load data into cache
+@st.cache_data
+def load_data():
+    # Load data of baseline scenario.
+    dir_compressed_data = './data/processed/climatebench/webapp/'
+    filename_compressed_data = 'cache_climatebench_ssp245_baseline.pkl'
+    if RUN_OFFLINE:
+        cache = store_compressed_data(
+            dir_compressed_data,
+            filename_compressed_data)
+    else:
+        # Load data from file
+        path = dir_compressed_data + filename_compressed_data
+        with open(path, 'rb') as f:
+            cache = pickle.load(f)
 
     # Load model global co2 to global tas
     path_model = Path('./runs/pattern_scaling/default/models/global_co2_to_global_tas.pkl')

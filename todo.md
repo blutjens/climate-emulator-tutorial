@@ -25,6 +25,9 @@ demo development
         [x] write requirements.txt that installs all dependencies
         [x] create dummy github. Find dummy email address that doesnt have a github -> using @climate-viz
         [] debug streamlit build
+            [] streamlit needs climatebench data
+                either download data files during build
+                or reduce  data files. 
     [] add ch4, etc. as optional arguments at the bottom
 model development
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
