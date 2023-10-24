@@ -2,10 +2,14 @@
 
 [] test environment.yml
 demo development
-    [] change colormap to discrete. Its super hard to read any values.
-        [] plot onto a little nicer projection
-    [] use today's temperature as baseline.
-    [] show 2100 temperature, not 2080-2100
+    [x] change colormap to discrete. Its super hard to read any values.
+        [x] plot onto a little nicer projection
+    [x] use today's temperature as baseline.
+    [x] show 2100 temperature, not 2080-2100
+    [x] set tasmin and tasmax to be min,max plotted value.
+    [] set co2min, max to be today's values
+    [x] add main
+    [x] check why model disagrees with baseline at 0.87°C
     [] expand piecewise linear to map all_ghg -> T
     [x] create interactive demo
         [x] write model.predict() that takes global co2 and predicts global T

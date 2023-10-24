@@ -16,16 +16,33 @@ import matplotlib.colors as colors # plot_tas_annual_local_err_map
 from emcli.dataset.climatebench import load_climatebench_data
 import emcli.models.pattern_scaling.model as ps
 from emcli.dataset.interim_to_processed import calculate_global_weighted_average
+from emcli.dataset.interim_to_processed import calculate_global_weighted_average_np
 
-# If True, loads raw climatebench data and stores a compressed
-#  version that can be stored on git and loaded on webapp
-# If False, load processed compressed data. Set False for deployment.
-RUN_OFFLINE = False 
+def run_model(co2_selected, 
+    model_global_co2_to_global_tas, 
+    model_global_tas_to_local_tas):
+    """
+    Runs model to compute a map of predicted surface temperature anomalies
+    given the selected co2.
+    Args:
+        co2_selected float: Selected cumulative co2 emissions
+        model_global_co2_to_global_tas: model that maps global co2 to global tas
+        model_global_tas_to_local_tas: model that maps global tas to local tas)
+    Returns:
+        preds numpy.array(n_lat, n_lon): predicted surface temperature anomaly since 1850 
+            under the selected cumulative co2 emissions
+        preds_global_tas (1): predicted global surface temperature anomaly since 1850
+    """
+    # Run model to map selected global co2 from input onto global tas
+    co2_selected = np.array([[co2_selected,]])# (n_time,in_channels)
+    preds_global_tas = model_global_co2_to_global_tas.predict(co2_selected) # (n_time, out_channels)
+    preds_global_tas = preds_global_tas[:,0] # 
 
-st.write("""
-# BC3 Climate Pocket
-Mapping CO2 to temperature
-""")
+    # Map global tas onto local tas
+    preds = model_global_tas_to_local_tas.predict(preds_global_tas) # (n_time, n_lat, n_lon)
+    preds = preds.mean(axis=0) # (n_lat, n_lon)
+
+    return preds
 
 # Store compressed version of data that can be loaded on external app
 def store_compressed_data(dir_compressed_data, filename_compressed_data):
@@ -42,15 +59,13 @@ def store_compressed_data(dir_compressed_data, filename_compressed_data):
     # Get lat, lon for map plotting
     cache['lat'] = Y_target[0]['tas'].latitude.data
     cache['lon'] = Y_target[0]['tas'].longitude.data
-    # Get colormap bounds
-    cache['tasmin'] = Y_target[0]['tas'].min().data.item() # Convert to python 'class' float
-    cache['tasmax'] = Y_target[0]['tas'].max().data.item()
-    # Define slider bounds
+    # Define input slider bounds
     cache['co2min'] = X_input[0]['CO2'].min().data.item() # Convert to python 'class' float
     cache['co2max'] = 2 * X_input[0]['CO2'].max().data.item()
+    cache['co2today'] = X_input[0]['CO2'].sel(time=slice("2010", "2020")).mean(dim="time").data.item()
 
     # Get baseline
-    tas_baseline = Y_target[0]['tas'].sel(time=slice("2081", "2100")).mean(dim="time")
+    tas_baseline = Y_target[0]['tas'].sel(time=slice("2010", "2020")).mean(dim="time")
     cache['tas_baseline'] = tas_baseline.data
     cache['tas_global_baseline'] = calculate_global_weighted_average(tas_baseline)
 
@@ -64,7 +79,16 @@ def store_compressed_data(dir_compressed_data, filename_compressed_data):
 
 # Load data into cache
 @st.cache_data
-def load_data():
+def load_cache():
+    # Set False for deployment. If False, loads compressed baseline data. 
+    # Set True for development. If True, loads raw baseline data 
+    #   (from climatebench) and stores a compressed version that can be 
+    #   stored on git and loaded on webapp. Note, that changes in 
+    #   store_compressed_data() are not automatically recognized. Workaround
+    #   is to add a dummy print statement into load_cache whenever store_
+    #   compressed_data is changed.
+    RUN_OFFLINE = True
+
     # Load data of baseline scenario.
     dir_compressed_data = './data/processed/climatebench/webapp/'
     filename_compressed_data = 'cache_climatebench_ssp245_baseline.pkl'
@@ -87,47 +111,85 @@ def load_data():
     path_model = Path('./runs/pattern_scaling/default/models/global_tas_to_local_tas.pkl')
     cache['model_global_tas_to_local_tas'] = ps.load(dir=str(path_model.parent)+'/', filename=str(path_model.name))
     
-    # Create figure with PlateCarree projection
-    cache['fig'], cache['axs'] = plt.subplots(figsize=(6,4), 
-        subplot_kw=dict(projection=ccrs.PlateCarree()),
-        dpi=200)
+    # Get the bounds of the colormap given the min, max values of the slider
+    tasmin = run_model(cache['co2min'],
+        cache['model_global_co2_to_global_tas'],
+        cache['model_global_tas_to_local_tas'])
+    cache['tasmin'] = tasmin.min().item()
+    tasmax = run_model(cache['co2max'],
+        cache['model_global_co2_to_global_tas'],
+        cache['model_global_tas_to_local_tas'])
+    tasmax = np.min((tasmax.max(), 10.)) # Cut-off max temp at 10°C because I saw 
+        # outliers at 14°C in the data and it skews the colormap
+    cache['tasmax'] = tasmax.item() # convert to class 'float'
 
+    # Create figure with cartopy projection
+    cache['fig'], cache['axs'] = plt.subplots(figsize=(6,4), 
+        subplot_kw=dict(projection=ccrs.Robinson()),
+        dpi=200)
     return cache
 
-# Get the data from the cache
-cache = load_data()
+if __name__ == "__main__":
+    # Main function, which is run for every change on the webpage
 
-# Create a slider retrieve input selection, e.g., global co2
-co2_selected = st.slider('### Cumulative CO2 emissions (GtCO2)', cache['co2min'], cache['co2max'], cache['co2max'])
+    st.write("""
+    # BC3 Climate Pocket: CO2 -> Temp.
+    """)
 
-# Map selected global co2 from input onto global tas
-co2_selected = np.array([[co2_selected,]])# (n_time,in_channels)
-preds_global_tas = cache['model_global_co2_to_global_tas'].predict(co2_selected) # (n_time, out_channels)
-preds_global_tas = preds_global_tas[:,0] # 
+    # Get the data from the cache
+    cache = load_cache()
 
-# Map global tas onto local tas
-preds = cache['model_global_tas_to_local_tas'].predict(preds_global_tas) # (n_time, n_lat, n_lon)
-preds = preds.mean(axis=0) # (n_lat, n_lon)
+    st.write(f"""
+    ##### Today's global temperature increase since 1850 is ~{cache['tas_global_baseline']:.2f}°C.
+    ##### Set the cumulative CO2 emissions from 1850 until 2100 in GtCO2:
+    """)
 
-# Compute difference to baseline
-diff = preds - cache['tas_baseline']
+    # Create a slider to retrieve input selection, e.g., global co2
+    co2_selected = st.slider('cumulative CO2 emissions (GtCO2)', 
+        min_value=cache['co2min'], 
+        max_value=cache['co2max'], 
+        value=cache['co2today'],
+        label_visibility='collapsed')
 
-# Plot ground-truth surface temperature anomalies using cartopy
-st.write(f"""
-#### Global temperature increase:
-#### Predicted: {preds_global_tas[0]:.2f}°C vs. Baseline:  {cache['tas_global_baseline']:.2f}°C 
-""")
-cnorm = colors.TwoSlopeNorm(vmin=cache['tasmin'], vcenter=0, vmax=cache['tasmax']) # center colorbar around zero
-mesh = cache['axs'].pcolormesh(cache['lon'], cache['lat'], diff, cmap='coolwarm',norm=cnorm)
-cbar = plt.colorbar(mesh, ax=cache['axs'], orientation='horizontal', shrink=0.95, pad=0.05)
-cbar.set_label('Difference (predicted - baseline) surface temperature \nanomalies, averaged over 2080-2100 in °C')
-cbar.ax.set_xscale('linear')
-cache['axs'].coastlines()
+    preds = run_model(co2_selected,
+        cache['model_global_co2_to_global_tas'],
+        cache['model_global_tas_to_local_tas'])
 
-# Display the map on the webdemo using streamlit
-st.pyplot(cache['fig'])
+    # Compute tas difference to baseline
+    diff = preds - cache['tas_baseline']
 
-st.write(f"""
-- The input  is the cumulative CO2 emissions (GtCO2). Averaged over 2080-2100.
-- The baseline are surface temperature anomalies wrt. 1850. Averaged over 2080-2100. Averaged globally using a cosine weights. Averaged over 3 ensemble members. Uses the {cache['baseline_scenario']} scenario and NorESM2 model.
-""")
+    # Calculate global avg of predicted map
+    preds_global_tas = calculate_global_weighted_average_np(preds[None,...], cache['lat'])
+
+    # Plot ground-truth surface temperature anomalies using cartopy
+    st.write(f"""
+    ##### With this, the model predicts a temperature increase until 2100 of: {preds_global_tas[0]:.2f}°C.
+    This would create the additional temperature increase from today:
+    """)
+    # Create discrete colorbar, centered around 0
+    color_boundaries_neg = np.round(np.linspace(cache['tasmin'], -0.20, 5)*5.)/5. # , e.g., *4/4 rounds to closest 0.25
+    color_boundaries_pos = np.round(np.linspace(0.5, cache['tasmax'], 5)*2.)/2. # *2/2 rounds to closest 0.5
+    color_boundaries = np.hstack((color_boundaries_neg, color_boundaries_pos))
+    # print('color_boundaries', color_boundaries, color_boundaries_neg.shape, color_boundaries_pos.shape)
+    cnorm = colors.BoundaryNorm(boundaries=color_boundaries, ncolors=256)
+
+    # Plot values
+    mesh = cache['axs'].pcolormesh(cache['lon'], cache['lat'], diff, cmap='coolwarm', norm=cnorm, transform=ccrs.PlateCarree())
+    cbar = plt.colorbar(mesh, ax=cache['axs'], orientation='horizontal', shrink=0.95, pad=0.05, spacing='uniform', extend='max')
+    cbar.set_label('Difference (2100 - today) global temperature increase in °C')
+    cbar.ax.set_xscale('linear')
+    cache['axs'].coastlines()
+
+    # Display the map on the webdemo using streamlit
+    st.pyplot(cache['fig'])
+
+    st.write(f"""
+    - Data description:
+        - The input is the cumulative CO2 emissions (GtCO2) until 2100 since 1850.
+        - The baseline is the surface temperature anomalies wrt. 1850. Averaged over 2010-2020. Uses historical data until 2014. Uses the average of 3 NorESM2 model runs of {cache['baseline_scenario']} scenario for 2015 and onwards.
+        - The global average baseline uses a cosine weights to approximate the grid cell area.
+        - The model is made of two linear models. The first model maps global co2 to global tas. The second model is a linear pattern scaling model that maps global tas onto local tas. 
+    - Known errors:
+        - There's a significant difference between the baseline and prediction even if both show the same global temperature increase. This difference is mostly due to errors in the predictive model and the baseline being an average over multiple years.
+        - ProjError: transform error: Invalid coordinate: This error occurs when the slider is moved repeatidly before the calculation is finished. No known fix.
+    """)

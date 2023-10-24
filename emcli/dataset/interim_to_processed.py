@@ -22,6 +22,24 @@ outputs - batch, c, lat, lon
 from pathlib import Path
 import numpy as np
 
+def calculate_global_weighted_average_np(np_data, latitude):
+  """ Calculates global weighted average approximating
+  grid cell area with cos(latitude). Assumes input is
+  numpy array.
+  Args:
+    np_data np.array(time, latitude, longitude)
+    latitude np.array(n_latitude): latitude values in deg
+  Returns:
+    global_avg np.array(time)
+  """
+  # weighted average across latitude
+  weights = np.cos(np.deg2rad(latitude))
+  global_avg = np.average(np_data, axis=1, weights=weights)
+  # average across longitude
+  global_avg = np.mean(global_avg, axis=-1)
+
+  return global_avg
+
 def calculate_global_weighted_average(xr_data):
   """ Calculates global weighted average approximating
   grid cell area with cos(latitude).
