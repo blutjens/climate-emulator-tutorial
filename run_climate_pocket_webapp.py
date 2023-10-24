@@ -87,12 +87,12 @@ def load_cache():
     #   store_compressed_data() are not automatically recognized. Workaround
     #   is to add a dummy print statement into load_cache whenever store_
     #   compressed_data is changed.
-    RUN_OFFLINE = False
+    RUN_OFFLINE = True
 
     # Load data of baseline scenario.
     dir_compressed_data = './data/processed/climatebench/webapp/'
     filename_compressed_data = 'cache_climatebench_ssp245_baseline.pkl'
-    if RUN_OFFLINE:
+    if RUN_OFFLINE == True:
         st.write('running offline. Change RUN_OFFLINE before commit to external.')
         cache = store_compressed_data(
             dir_compressed_data,
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     st.write(f"""
     ##### Today's global temperature increase since 1850 is ~{cache['tas_global_baseline']:.2f}°C.
-    ##### Set the cumulative CO2 emissions from 1850 until 2100 in GtCO2:
+    ##### With the cumulative CO2 emissions over 1850-2100 in GtCO2:
     """)
 
     # Create a slider to retrieve input selection, e.g., global co2
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     # Plot ground-truth surface temperature anomalies using cartopy
     st.write(f"""
-    ##### With this, the model predicts a temperature increase until 2100 of: {preds_global_tas[0]:.2f}°C.
+    ##### the model predicts a temperature increase until 2100 of: {preds_global_tas[0]:.2f}°C.
     This would create the additional temperature increase from today:
     """)
     # Create discrete colorbar, centered around 0
@@ -177,9 +177,14 @@ if __name__ == "__main__":
     # Plot values
     mesh = cache['axs'].pcolormesh(cache['lon'], cache['lat'], diff, cmap='coolwarm', norm=cnorm, transform=ccrs.PlateCarree())
     cbar = plt.colorbar(mesh, ax=cache['axs'], orientation='horizontal', shrink=0.95, pad=0.05, spacing='uniform', extend='max')
-    cbar.set_label('Difference (2100 - today) global temperature increase in °C')
+    # cbar.set_label('Difference (2100 - today) global temperature increase in °C')
     cbar.ax.set_xscale('linear')
     cache['axs'].coastlines()
+
+    # En-roads prefers no caption in image.
+    st.write(f"""
+    ##### Difference (2100 - today) global temperature increase in °C
+    """)
 
     # Display the map on the webdemo using streamlit
     st.pyplot(cache['fig'])
@@ -193,4 +198,5 @@ if __name__ == "__main__":
     - Known errors:
         - There's a significant difference between the baseline and prediction even if both show the same global temperature increase. This difference is mostly due to errors in the predictive model and the baseline being an average over multiple years.
         - ProjError: transform error: Invalid coordinate: This error occurs when the slider is moved repeatidly before the calculation is finished. No known fix.
+        - Doesn't work on safari or edge.
     """)

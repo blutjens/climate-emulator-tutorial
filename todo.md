@@ -7,10 +7,9 @@ demo development
     [x] use today's temperature as baseline.
     [x] show 2100 temperature, not 2080-2100
     [x] set tasmin and tasmax to be min,max plotted value.
-    [] set co2min, max to be today's values
+    [x] set co2min, max to be today's values
     [x] add main
     [x] check why model disagrees with baseline at 0.87°C
-    [] expand piecewise linear to map all_ghg -> T
     [x] create interactive demo
         [x] write model.predict() that takes global co2 and predicts global T
         [x] create xarray with dimensions: (co2 avg over 2080-2100), (global T avg over 2080-2100), (latitude), (longitude). 
@@ -25,7 +24,8 @@ demo development
             [x] host as map -> streamlit-folium seems to buggy (https://folium.streamlit.app/) -> streamlit.map only does scatter plots -> just use cartopy for now
         [x] host in jupyter notebook via xarray bokeh -> too buggy
     [x] plot (pred - baseline) surface temperature anomaly 
-    [] use co2 emission curve.
+    [] expand piecewise linear to map all_ghg -> T
+    [] use co2 emission over time curve.
         [] create co2(t) = by piecewise linear interpolation of co2(ssp127,ssp585(t))
         [] plot co2 emission curve
     [x] host on external webpage
