@@ -2,6 +2,10 @@
 
 [] test environment.yml
 demo development
+    [] change colormap to discrete. Its super hard to read any values.
+        [] plot onto a little nicer projection
+    [] use today's temperature as baseline.
+    [] show 2100 temperature, not 2080-2100
     [] expand piecewise linear to map all_ghg -> T
     [x] create interactive demo
         [x] write model.predict() that takes global co2 and predicts global T
@@ -17,7 +21,6 @@ demo development
             [x] host as map -> streamlit-folium seems to buggy (https://folium.streamlit.app/) -> streamlit.map only does scatter plots -> just use cartopy for now
         [x] host in jupyter notebook via xarray bokeh -> too buggy
     [x] plot (pred - baseline) surface temperature anomaly 
-    [] change colormap to discrete. Its super hard to read any values.
     [] use co2 emission curve.
         [] create co2(t) = by piecewise linear interpolation of co2(ssp127,ssp585(t))
         [] plot co2 emission curve

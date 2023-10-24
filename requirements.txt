@@ -1,3 +1,4 @@
+# status 10/2023: tested to run webapp. Not tested for climate_emulato_tutorial.ipynb
 numpy
 matplotlib
 tqdm
