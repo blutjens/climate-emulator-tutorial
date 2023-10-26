@@ -137,6 +137,11 @@ def interim_to_global_global(X_global_local, Y_global_local,
   assert keys_exist_in_list_of_datasets(X_global_local, input_keys)
   assert keys_exist_in_list_of_datasets(Y_global_local, target_keys)
 
+  # todo: discard duplicate data from historical sequences, similar to 
+  # for scenario in scenarios:
+  #   X_global_local[scenario] = X_global_local[scenario].drop(time == historical) 
+  #   Y_global_local[scenario] = X_global_local[scenario].drop(time == historical) 
+
   input = average_globally_and_stack_in_time_and_channel(X_global_local, input_keys)
   target = average_globally_and_stack_in_time_and_channel(Y_global_local, target_keys)
 
