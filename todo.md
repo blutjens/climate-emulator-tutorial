@@ -25,6 +25,8 @@ model development
         [x] calculate outputs: locally-resolved tas(t, xy)
             --> see why double check is wrong at some points.
         [] retrain patternscaling model for this in/output combination
+            [x] write raw code to extend patternscaling code to multi-variate
+            [] text code extension for multi-variate linear patternscaling.
         [] evaluate if that gets the north atlantic cold blob right
     [] write train.py s.t., i can plug in an fcnn, unet, etc. given a dataloader?
         [] rewrite dataloader, s.t., the explore_data scipt saves an ML-ready dataset in processed/. The train.py then takes in a path to that dataset and creates a dataloader.
