@@ -43,7 +43,7 @@ class PatternScaling(object):
         out_local = out_local.reshape(n_t,-1) # (n_t, n_lat*n_lon)
 
         # Fit linear regression coefficients to every grid point
-        self.coeffs = np.polyfit(in_global, out_local, deg=1) # (2, n_lat*n_lon)
+        self.coeffs = np.polyfit(in_global, out_local, deg=self.deg) # (2, n_lat*n_lon)
 
         # Reshape coefficients onto locally-resolved grid
         self.coeffs = self.coeffs.reshape(-1, n_lat, n_lon) # (2, n_lat, n_lon)

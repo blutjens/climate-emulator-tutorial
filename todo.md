@@ -12,13 +12,8 @@ clarify take-aways:
     [] global CO2 -> local T is mostly linear ->> need more difficult variables
     [] global co2 -> local T has errors in Arctic, Antarctica in linear model. ->> need long-/short term network (such as lstm) to get rid of those
     [] global CO2 -> precip??
-demo development
-    [] expand piecewise linear to map all_ghg -> T
-    [] use co2 emission over time curve.
-        [] create co2(t) = by piecewise linear interpolation of co2(ssp127,ssp585(t))
-        [] plot co2 emission curve
-    [] add ch4, etc. as optional arguments at the bottom
 model development
+    [] calculate NRMSE to compare with climatebench
     [] create a linear time difference model
         [] drop duplicate time data in time-instant linear regression model
         [x] calculate inputs: time-difference vector tas(t) - tas(t-1)
@@ -46,7 +41,8 @@ model development
         - linear model underestimates cooling in that area in ssp245
             - co2 from 10-20 y ago initiates greenland melt? 
         -- non trivial!
-[] data exploration:
+data exploration:
+    [] clone explore_temperature for precip
     [] why is the cnn-lstm better in the arctic than linear model?
         - is this due to long- short term memory?
         - what are the inputs to the cnn again? 
@@ -76,6 +72,12 @@ model development
         [] plot spatially-resolved 20year average tas on right and global co2 concentrations over time on left. The question is if I can see a mapping in between the co2 and local tas values?
     [] create scatterplot of co2 to each pixel? to see if co2 relates locally linearly to tas
     [] create 2nd order polynomial fit instead of pattern scaling. I'm interested if there's good trends in the global T vs. local T plot.
+demo development
+    [] expand piecewise linear to map all_ghg -> T
+    [] use co2 emission over time curve.
+        [] create co2(t) = by piecewise linear interpolation of co2(ssp127,ssp585(t))
+        [] plot co2 emission curve
+    [] add ch4, etc. as optional arguments at the bottom
 
 Beyond tutorial:
 [] Download 3hr tas, huss, ps from esgf cnrm-esm2-1 for 2014-2100 for ssp585-over and 1 ensemble member.

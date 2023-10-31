@@ -17,3 +17,4 @@ tqdm
 scikit-learn
 # regionmask
 streamlit
+xskillscore # for error metrics on xarrays
