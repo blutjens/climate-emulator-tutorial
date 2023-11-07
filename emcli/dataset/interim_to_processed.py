@@ -21,6 +21,154 @@ outputs - batch, c, lat, lon
 """
 from pathlib import Path
 import numpy as np
+import xarray as xr
+
+def interim_to_global_diff_local(xr_list_of_datasets, 
+    data_var='tas',
+    len_historical=165,
+    scenario_keys=['ssp126', 'ssp370', 'ssp585', 'hist-GHG', 'hist-aer'],
+    skip_historical_scenarios=['ssp126', 'ssp370']):
+    """
+    Computes processed data for multivariate pattern scaling model
+    from global + global difference to local variable. E.g., 
+    tas(t), tas(t)-tas(t-1) --> tas(t,x,y). Data from scenarios is 
+    concatenated across time dimensions and duplicate historical data
+    discarded.
+
+    Args:
+        xr_list_of_datasets list(n_scenarios * xarray.Dataset{
+            data_var: xarray.DataArray(n_time, n_lat, n_lon)})
+            Contains in- and outputs in interim data format.
+        data_var str : key to variable of interest, e.g., 'tas'
+        len_historical: length of historical datasets; used to remove
+            duplicate historical data.
+    Returns:
+        tas_global_diff
+            np.array(time*n_scenarios, 2): Contains globally-averaged tas(t)
+                in tas_global_diff[:,0] and difference tas(t)-tas(t-1) in 
+                tas_global_diff[:,1]. 
+        tas_local
+            np.array(time*n_scenarios, 2): Contains local maps of tas(t)
+                the first time step is dropped, s.t., the output dimensions
+                match tas_global_diff
+    """
+    len_snippets=2
+    # Drup duplicate historical data
+    tas_local_xr = drop_duplicate_historical(xr_list_of_datasets, 
+        len_historical=len_historical,
+        scenario_keys=scenario_keys,
+        skip_historical_scenarios=skip_historical_scenarios,
+        len_snippets=len_snippets)
+
+    # Calculate global average
+    n_scenarios = len(tas_local_xr)
+    tas_global_xr = [calculate_global_weighted_average(tas_local_xr[i][data_var]) for i in range(n_scenarios)]
+
+    # Compute time difference: tas(t) - tas(t-1)
+    # First, smoothen data over time with polynomial to remove internal variability
+    tas_global_xr_smooth = []
+    tas_global_xr_cp = [arr.copy() for arr in tas_global_xr]
+    smoothen_deg = 5 # Degree of polynomial that is fit to global average to smoothen internal variability
+    for i in range(n_scenarios):
+        tas_coefs = tas_global_xr_cp[i].polyfit(dim="time", deg=smoothen_deg) # xr.Dataset(coefs, )
+        tas_poly = xr.polyval(coord=tas_global_xr_cp[i].time, coeffs=tas_coefs) # xr.Dataset(time, )
+        tas_poly = tas_poly.rename({"polyfit_coefficients": data_var})
+        tas_poly = tas_poly[data_var] # Convert xr.Dataset into xr.DataArray
+        tas_global_xr_smooth.append(tas_poly)
+        # tas_global_xr_smooth[i][data_var].plot(label="poly")
+        # plt.legend()
+    ## Second, extract time snippets of length 2: [tas(t-1), tas(t)]
+    tas_global_hist_smooth = reshape_to_snippets_xr_to_np(tas_global_xr_smooth,len_snippets=len_snippets)
+    ## Third, calculate difference between time steps: tas(t) - tas(t-1). This reduces the (time) dimensions by 1.
+    tas_diff = np.diff(tas_global_hist_smooth, axis=1) # (time, 1, [lat, lon], variables)
+    tas_diff = tas_diff[...,0] # (time, 1, [lat, lon], ). Cut variable dimension.
+
+    # Extract non-smoothened global tas(t)
+    ## For that, we extract time snippets of length 2 again
+    tas_global_hist = reshape_to_snippets_xr_to_np(tas_global_xr,len_snippets=len_snippets) # [tas(t-1), tas(t)]
+    tas_global_hist = np.roll(tas_global_hist,shift=1,axis=1) # rearrange, s.t., it's [tas(t), tas(t-1)]
+    tas_global_hist = tas_global_hist[...,0] # (time, [lat, lon], 2) Discard variable dimension ()
+
+    # Build final array [tas(t), tas_smooth(t) - tas_smooth(t-1)]
+    tas_global_hist[:,1:2,...] = tas_diff # overwrite tas(t-1) with diff. dim: (time, 2, [lat, lon], variables). 
+
+    # Get time-aligned local output maps
+    # Remove the first time step from the target dataset with local values and convert to np
+    tas_local_np = np.concatenate([dataset[data_var].data[len_snippets-1:,...,None] for dataset in tas_local_xr], axis=0) # (time*n_scenarios, lat, lon, 1)
+
+    # Double check that time-steps match each other
+    tas_local_avg = calculate_global_weighted_average_np(tas_local_np[...,0], xr_list_of_datasets[0][data_var].latitude.data)
+    assert np.allclose(tas_local_avg, tas_global_hist[:,0], atol=0.0001), 'Error, the timesteps dont seem to match'
+
+    return tas_global_hist, tas_local_np
+
+def reshape_to_snippets_np(data, len_snippets=10): 
+    """
+    Extracts snippets with len_snippets time steps from one time-series
+
+    data np.array(time, [opt: latitude, longitude, variable]) : 
+        Data from a single scenario.
+    Returns:
+        np.array(time - len_snippets + 1, len_snippets, [opt: latitude, longitude, variable])
+    """
+    time_length = data.shape[0]
+    last_t0 = time_length-len_snippets+1
+    data_snippets = np.array([data[i:i+len_snippets] for i in range(0, last_t0)])
+
+    return data_snippets
+
+def reshape_to_snippets_xr_to_np(xr_list_of_dataarrays, len_snippets=2):
+    """
+    Extracts snippets with len_snippets time steps from a list of
+    xarray datasets
+    
+    Args:
+        xr_list_of_dataarrays list(n_scenarios * xarray.DataArray(n_time, [opt:n_lat, n_lon])):
+            list of xarray dataarrays that represent multiple scenarios
+    Returns:
+        data_as_snippets
+            np.array((time - len_snippets + 1)*n_scenarios, len_snippets, [opt: latitude, longitude,] variable)
+    """
+    n_scenarios = len(xr_list_of_dataarrays)
+    data_var_global_snippets = list()
+    for i in range(n_scenarios):
+        data_scenario_np = xr_list_of_dataarrays[i].data[...,None] # convert xr to np. Add variable dimension.
+        # Extract snippets
+        data_scenario_np_as_snippets = reshape_to_snippets_np(data_scenario_np, len_snippets=len_snippets) # (time, len_snippets, [lat, lon], variables)
+        data_var_global_snippets.append(data_scenario_np_as_snippets)
+    data_as_snippets = np.concatenate(data_var_global_snippets, axis=0) # (time*n_scenarios, len_snippets, [lat, lon],variables)
+    return data_as_snippets
+
+def drop_duplicate_historical(xr_list_of_datasets, 
+    len_historical=165, 
+    scenario_keys=['ssp126', 'ssp370', 'ssp585', 'hist-GHG', 'hist-aer'],
+    skip_historical_scenarios=['ssp126', 'ssp370'],
+    len_snippets=1):
+    """
+    Drop duplicate historical data in list of xr datasets:
+
+    Args:
+        xr_list_of_datasets list(n_scenarios * xarray.Dataset{
+            data_var: xarray.DataArray(n_time, [opt:n_lat, n_lon])}):
+        list of xarray datasets that represent multiple scenarios
+        len_historical: range of historical time period that should be dropped
+            datasets that correspond to skip_historical_scenarios
+        scenario_keys: keys to each scenarios. The order must correspond to
+            the order in xr_list_of_datasets
+        skip_historical_sceanrios: keys of scenarios where the historical dataset
+            should be skipped
+        len_snippets: number of time steps of historical data - 1 that should be kept,
+            to be able to use historical data in the snippets of future data.
+    Returns:
+        xr_list_of_datasets list(n_scenarios_skip_historical * xarray.Dataset{
+                data_var: xarray.DataArray(n_time - len_historical + (len_snippets-1), [opt:n_lat, n_lon])},
+            n_scenarios_not_skip_historical * xarray.Dataset{
+                 data_var: xarray.DataArray(n_time, [opt:n_lat, n_lon])}):
+    """    
+    skip_historical_idx = [scenario_keys.index(x) for x in skip_historical_scenarios]
+    for scenario_idx in skip_historical_idx:
+        xr_list_of_datasets[scenario_idx] = xr_list_of_datasets[scenario_idx].drop_isel(time=range(len_historical - len_snippets + 1))
+    return xr_list_of_datasets
 
 def calculate_global_weighted_average_np(np_data, latitude):
   """ Calculates global weighted average approximating
@@ -224,3 +372,13 @@ def interim_to_pushforward(X_global, Y_local,
 
   # todo: store data
   np.store(self.data)
+
+
+""" Archive
+# Smooth using sliding window
+tas_cp = tas_train.rolling(time=15,center=True).mean()
+tas_cp = tas_cp.mean(dim=("latitude", "longitude"))
+tas_cp = tas_cp.dropna(dim="time")
+tas_cp.plot(label='sliding_window')
+print(f'shape before {tas_train.shape} and after {tas_cp.shape}')
+"""

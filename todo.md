@@ -6,6 +6,10 @@ publish ready:
     [] test environment.yml
         [] with new laptop 
     [] clean table of contents
+        restart and use "markdown all in one: create table of contents" command
+    [] how to integrate polynomial pattern scaling?
+        [] move complexity over performance into discussion
+
 clarify take-aways:
     [] co2, ch4, bc, so2 are a lot of greenhouse gases ->> need common unit
     [] internal variability is open challenge ->> need ensemble members
@@ -15,6 +19,10 @@ clarify take-aways:
 model development
     [] calculate NRMSE to compare with climatebench
     [] create a linear time difference model
+        [] calculate tas(t)-tas(t-1) on smoothened data.
+            Could I also smoothen the difference instead? I don't think so, it looks so noisy..
+            Need to calculate difference using polynomial
+            [] Fix the bug that timesteps dont seem to match
         [] drop duplicate time data in time-instant linear regression model
         [x] calculate inputs: time-difference vector tas(t) - tas(t-1)
         [x] calculate outputs: locally-resolved tas(t, xy)
