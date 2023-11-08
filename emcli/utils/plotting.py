@@ -6,13 +6,18 @@ import matplotlib.colors as colors # plot_tas_annual_local_err_map
 from emcli.dataset.interim_to_processed import calculate_global_weighted_average
 
 
-def plot_co2_tas_global_over_time(X_train, 
+def plot_co2_data_var_global_over_time(X_train, 
           X_test, 
           Y_train, 
           Y_test, 
           scenarios_train=['ssp126','ssp370','ssp585','hist-GHG','hist-aer'],
           scenarios_test=['ssp245'],
-          preds=None):
+          preds=None,
+          data_var='tas',
+          data_var_labels={'tas':{
+                'ylabel': 'Annual Global Surface \n Temperate Anomaly in °C',
+                'title': 'Surface Temperature, "tas"'}},
+          ):
     """
     Creates three plots to highlight linear relationship between co2 and 
     temperature. First, plots the globally averaged cumulative CO2 
@@ -45,26 +50,26 @@ def plot_co2_tas_global_over_time(X_train,
     
     # Plot global surface temperature over time
     for idx, scenario in enumerate(scenarios_train):
-        axs[1].plot(Y_train[idx].time, calculate_global_weighted_average(Y_train[idx]['tas']), label=scenario)
+        axs[1].plot(Y_train[idx].time, calculate_global_weighted_average(Y_train[idx][data_var]), label=scenario)
     for idx, scenario in enumerate(scenarios_test):
-        axs[1].plot(Y_test[idx].time, calculate_global_weighted_average(Y_test[idx]['tas']), color='black', label=scenario)
+        axs[1].plot(Y_test[idx].time, calculate_global_weighted_average(Y_test[idx][data_var]), color='black', label=scenario)
         if preds is not None:
             axs[1].plot(Y_test[idx].time, preds, color='black', linestyle='--', alpha=0.8, label=scenario+'-pred')
     axs[1].set_xlabel("Time in years")
-    axs[1].set_ylabel("Annual Global Surface \n Temperate Anomaly in °C")
-    axs[1].set_title("Surface temperature, 'tas'")
+    axs[1].set_ylabel(data_var_labels[data_var]['ylabel'])
+    axs[1].set_title(data_var_labels[data_var]['title'])
     axs[1].legend()
 
     # Plot global surface temperature over cum. co2 emissions
     for idx, scenario in enumerate(scenarios_train):
-        axs[2].plot(X_train[idx]['CO2'], calculate_global_weighted_average(Y_train[idx]['tas']), label=scenario)
+        axs[2].plot(X_train[idx]['CO2'], calculate_global_weighted_average(Y_train[idx][data_var]), label=scenario)
     for idx, scenario in enumerate(scenarios_test):
-        axs[2].plot(X_test[idx]['CO2'], calculate_global_weighted_average(Y_test[idx]['tas']), color='black', label=scenario)
+        axs[2].plot(X_test[idx]['CO2'], calculate_global_weighted_average(Y_test[idx][data_var]), color='black', label=scenario)
         if preds is not None:
             axs[2].plot(X_test[idx]['CO2'], preds, linestyle='--', color='black', label=scenario+'-pred')
     axs[2].set_xlabel("Cum. CO2 Emissions")
-    axs[2].set_ylabel("Annual Global Surface \n Temperate Anomaly in °C")
-    axs[2].set_title("CO2 vs. tas")
+    axs[2].set_ylabel(data_var_labels[data_var]['ylabel'])
+    axs[2].set_title(f"CO2 vs. {data_var}")
     
     plt.tight_layout()
 
@@ -176,7 +181,7 @@ def plot_all_vars_global_avg(X_train,
 
     return axs
 
-def plot_tas_annual_local_err_map(tas_true, tas_pred):
+def plot_tas_annual_local_err_map(tas_true, tas_pred, data_var='tas'):
     """
     Plots three maps of surface temperature anomalies (tas).
     This includes the ground-truth tas, predicted tas,
@@ -215,14 +220,14 @@ def plot_tas_annual_local_err_map(tas_true, tas_pred):
     cnorm = colors.TwoSlopeNorm(vmin=tas_true_t_avg.min(), vcenter=0, vmax=tas_true_t_avg.max()) # center colorbar around zero
     mesh = axs[0].pcolormesh(lon, lat, tas_true_t_avg.data, cmap='coolwarm',norm=cnorm, transform=transform)
     cbar = plt.colorbar(mesh, ax=axs[0], orientation='horizontal', shrink=0.95, pad=0.05)
-    cbar.set_label('True surface temperature anomalies, \naveraged over 2080-2100 in °C')
+    cbar.set_label(f'True {data_var}, \naveraged over 2080-2100 in °C')
     cbar.ax.set_xscale('linear')
     axs[0].coastlines()
 
     # Plot predicted surface temperature anomalies
     mesh = axs[1].pcolormesh(lon, lat, tas_pred_t_avg.data, cmap='coolwarm',norm=cnorm, transform=transform)
     cbar = plt.colorbar(mesh, ax=axs[1], orientation='horizontal', shrink=0.95, pad=0.05)
-    cbar.set_label('Predicted surf. temp. anom., \navg 2080-2100 in °C')
+    cbar.set_label(f'Predicted {data_var}, \navg 2080-2100 in °C')
     cbar.ax.set_xscale('linear')
     axs[1].coastlines()
 
@@ -231,7 +236,7 @@ def plot_tas_annual_local_err_map(tas_true, tas_pred):
     divnorm = colors.BoundaryNorm(boundaries=bounds, ncolors=256)
     mesh = axs[2].pcolormesh(lon, lat, err_pattern_scaling.data, cmap='coolwarm', norm=divnorm, transform=transform)
     cbar = plt.colorbar(mesh, ax=axs[2], orientation='horizontal', shrink=0.95, pad=0.05)
-    cbar.set_label('Error (pred-target) in surf. temp. \nanom. avg 2080-2100 in °C')
+    cbar.set_label(f'Error (pred-target) in {data_var}\n avg 2080-2100 in °C')
     cbar.ax.set_xscale('linear')
     axs[2].coastlines()
     
