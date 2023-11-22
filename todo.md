@@ -11,11 +11,27 @@ publish ready:
         [] move complexity over performance into discussion
 
 clarify take-aways:
-    [] co2, ch4, bc, so2 are a lot of greenhouse gases ->> need common unit
-    [] internal variability is open challenge ->> need ensemble members
-    [] global CO2 -> local T is mostly linear ->> need more difficult variables
-    [] global co2 -> local T has errors in Arctic, Antarctica in linear model. ->> need long-/short term network (such as lstm) to get rid of those
-    [] global CO2 -> precip??
+    1) decide functional form in-the-loop with data
+    2) implement linera baseline
+    3) ML will overfit internal variability
+        --> need to illustrate those in a poster && notebook.
+
+    [] ** I need to publish research papers ** my currently I'm more teachy.
+    [] co2, ch4, bc, so2 are a lot of greenhouse gases ->> there's more than co2 that impacts temperature. need common unit
+        [] ml requires to specify in/ and outputs. problem is very different depending on how you conceptioanlize the problem. Is it all gases together, each gas individually, or just the policy?
+        [] BC and SO2 have little variation in cmip. need to have scenarios that capture that.
+        [] which variations are captured in the data in which not. We just have 5 scenarios, so we need to set-up the problem in a way that we have more data points.
+            -> need to decide purpose // in-/ output relation // which functional form to learn
+                -> is there enough data for this functional form from the ML pov. 
+                -> can we take assumptions in model
+    [] pitfall: use ML for problem where simpler is just fine.
+        [] global CO2 -> annual local tas is mostly linear ->> need more difficult variables
+        [] what are the learnings for ML ??  -->> need linear baseline
+        [] relationships are just local??
+    [] internal variability needs to be actively addressed ->> need ensemble members or temporal average
+        [] ML will be able to get perfect fit, but probably overfit on the val set to get internal variability right. need internal variability plot.
+    [] global co2 -> local tas has errors in Arctic, Antarctica in linear model. ->> need nonlinear to get rid of warming whole and time-history to get Greenland Sea
+    [] global CO2 -> precip?? also mostly linear?
 model development
     [] calculate NRMSE to compare with climatebench
     [] create a linear time difference model
