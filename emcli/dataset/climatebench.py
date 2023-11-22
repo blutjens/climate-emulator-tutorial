@@ -1,6 +1,16 @@
 import xarray as xr
 import numpy as np
 
+DATA_VAR_LABELS = {
+    'tas': {
+        'ylabel': 'Annual Global Surface \n Temperate Anomaly in °C',
+        'title': 'Surface Temperature, "tas"',
+    },
+    'pr': {
+        'ylabel': 'Annual Mean Precipitation in mm/day',
+        'title': 'Precipitation, "pr"',
+    }
+}
 # Climatebench utilities for normalizing the input data
 # Code adapted from: https://github.com/duncanwp/ClimateBench/
 # blob/main/baseline_models/CNN-LTSM_model.ipynb

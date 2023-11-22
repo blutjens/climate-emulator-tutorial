@@ -3,6 +3,7 @@
 work on eie -- *tutorial* -- (next step)
 
 publish ready:
+    [] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
     [] test environment.yml
         [] with new laptop 
     [] clean table of contents
@@ -12,7 +13,7 @@ publish ready:
 
 clarify take-aways:
     1) decide functional form in-the-loop with data
-    2) implement linera baseline
+    2) implement linear baseline
     3) ML will overfit internal variability
         --> need to illustrate those in a poster && notebook.
 
