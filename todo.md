@@ -3,9 +3,13 @@
 work on eie -- *tutorial* -- (next step)
 
 publish ready:
+    [] rewrite intro to methods section: ML could be good. Here we first try Linear. 
+        - Then find that polynomial can slightly improve. 
+        - Point to exact file in climatebench notebook for ML model (if there's time implement local NN). 
+        - Point to FairGP for having best result. 
+        - Then say I don't implement NN because of internal variability overfitting 
+        -> point to MPI data for 50 ensemble or temporal averaging paper.
     [] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
-    [] test environment.yml
-        [] with new laptop 
     [] clean table of contents
         restart and use "markdown all in one: create table of contents" command
     [] how to integrate polynomial pattern scaling?
