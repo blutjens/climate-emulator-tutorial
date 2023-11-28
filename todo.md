@@ -4,7 +4,10 @@ work on eie -- *tutorial* -- (next step)
 
 publish ready:
     [] Mention FairGP for doing physics-informed ML
-    [] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
+    [x] Clean references
+    [x] run whole notebook
+    [x] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
+        -> historical is used in train and test in ClimateBench. I do the same.
     [x] rewrite intro to methods section: ML could be good. Here we first try Linear. 
         - Then find that polynomial can slightly improve. 
         - Point to exact file in climatebench notebook for ML model (if there's time implement local NN). 
