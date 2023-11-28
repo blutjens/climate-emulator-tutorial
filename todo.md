@@ -3,17 +3,17 @@
 work on eie -- *tutorial* -- (next step)
 
 publish ready:
-    [] rewrite intro to methods section: ML could be good. Here we first try Linear. 
+    [] Mention FairGP for doing physics-informed ML
+    [] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
+    [x] rewrite intro to methods section: ML could be good. Here we first try Linear. 
         - Then find that polynomial can slightly improve. 
         - Point to exact file in climatebench notebook for ML model (if there's time implement local NN). 
-        - Point to FairGP for having best result. 
         - Then say I don't implement NN because of internal variability overfitting 
         -> point to MPI data for 50 ensemble or temporal averaging paper.
-    [] ** did climatebench hold out historical AND ssp245 or just ssp245? ** I think I'm train and testing on historical data.
-    [] clean table of contents
+    [x] clean table of contents
         restart and use "markdown all in one: create table of contents" command
-    [] how to integrate polynomial pattern scaling?
-        [] move complexity over performance into discussion
+    [x] how to integrate polynomial pattern scaling?
+        [x] move complexity over performance into discussion
 
 clarify take-aways:
     1) decide functional form in-the-loop with data
@@ -21,7 +21,6 @@ clarify take-aways:
     3) ML will overfit internal variability
         --> need to illustrate those in a poster && notebook.
 
-    [] ** I need to publish research papers ** my currently I'm more teachy.
     [] co2, ch4, bc, so2 are a lot of greenhouse gases ->> there's more than co2 that impacts temperature. need common unit
         [] ml requires to specify in/ and outputs. problem is very different depending on how you conceptioanlize the problem. Is it all gases together, each gas individually, or just the policy?
         [] BC and SO2 have little variation in cmip. need to have scenarios that capture that.
