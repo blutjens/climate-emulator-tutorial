@@ -13,8 +13,12 @@ pip install -e .
 ipython kernel install --user --name=emcli # Link conda environment to jupyter notebook
 ```
 
-todo: move notebook google colab: https://colab.research.google.com/drive/1XwTghkLbxrckwUeE_UMQ-HtuAeYfEETj?usp=sharing
+# Start the notebook
+```
+jupyter notebook climate_emulator_tutorial.ipynb
+```
 
+## Miscellanous likely irrelevant:
 ### Run hyperparameter search on server
 Note: this script has only been tested on a supercomputer at MIT. Modifications are likely necessary for other supercomputers.
 ```
@@ -44,4 +48,3 @@ source activate emcli
 # need packages: conda install netcdf4, torchvision, (jupyter_bokeh, geoviews), regionmask, streamlit, xskillscore
 conda deactivate
 ```
-
