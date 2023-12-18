@@ -65,7 +65,7 @@ def store_compressed_data(dir_compressed_data, filename_compressed_data):
     cache['co2today'] = X_input[0]['CO2'].sel(time=slice("2010", "2020")).mean(dim="time").data.item()
 
     # Get baseline
-    tas_baseline = Y_target[0]['tas'].sel(time=slice("2010", "2020")).mean(dim="time")
+    tas_baseline = Y_target[0]['tas'].sel(time=slice("1850", "1880")).mean(dim="time")
     cache['tas_baseline'] = tas_baseline.data
     cache['tas_global_baseline'] = calculate_global_weighted_average(tas_baseline)
 
@@ -167,7 +167,6 @@ if __name__ == "__main__":
     # Plot ground-truth surface temperature anomalies using cartopy
     st.write(f"""
     ##### the model predicts a temperature increase until 2100 of: {preds_global_tas[0]:.2f}°C.
-    This would create the additional temperature increase from today:
     """)
     # Create discrete colorbar, centered around 0
     color_boundaries_neg = np.round(np.linspace(cache['tasmin'], -0.20, 5)*5.)/5. # , e.g., *4/4 rounds to closest 0.25
@@ -185,7 +184,7 @@ if __name__ == "__main__":
 
     # En-roads prefers no caption in image.
     st.write(f"""
-    ##### Difference (2100 - today) global temperature increase in °C
+    ##### Temperature increase in °C
     """)
 
     # Display the map on the webdemo using streamlit
@@ -193,12 +192,12 @@ if __name__ == "__main__":
 
     st.write(f"""
     - Data description:
-        - The input is the cumulative CO2 emissions (GtCO2) until 2100 since 1850.
-        - The baseline is the surface temperature anomalies wrt. 1850. Averaged over 2010-2020. Uses historical data until 2014. Uses the average of 3 NorESM2 model runs of {cache['baseline_scenario']} scenario for 2015 and onwards.
-        - The global average baseline uses a cosine weights to approximate the grid cell area.
-        - The model is made of two linear models. The first model maps global co2 to global tas. The second model is a linear pattern scaling model that maps global tas onto local tas. 
+        - The input is the cumulative CO2 emissions (GtCO2) since 1850.
+        - The plot shows the surface temperature anomalies with respec to a baseline temperature. The baseline temperature is the average over 1850-1880. 
+        - The model is made of two linear models. The first model maps global co2 to global tas. The second model is a linear pattern scaling model that maps global tas onto local tas. The model was train on historical data until 2014 and the ensemble average of 3 NorESM2 model runs of {cache['baseline_scenario']} scenario for 2015 and onwards. The model was train on the scenarios ssp126, ssp370, ssp585, hist-GHG, hist-aer.
+        - The global averages use cosine weights to approximate the grid cell area.
     - Known errors:
-        - There's a significant difference between the baseline and prediction even if both show the same global temperature increase. This difference is mostly due to errors in the predictive model and the baseline being an average over multiple years.
+        - The predictive model is linear and as such imperfect. For example, in the ssp245 test scenario the model underpredicts the cooling in the North Atlantic Warming hole. The model also slightly overpredicts warming in the Russian Arctic.
         - ProjError: transform error: Invalid coordinate: This error occurs when the slider is moved repeatidly before the calculation is finished. No known fix.
         - Doesn't work on safari or edge.
     """)
