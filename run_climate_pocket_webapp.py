@@ -87,13 +87,15 @@ def load_cache():
     #   store_compressed_data() are not automatically recognized. Workaround
     #   is to add a dummy print statement into load_cache whenever store_
     #   compressed_data is changed.
-    RUN_OFFLINE = True
+    RUN_OFFLINE = False
 
     # Load data of baseline scenario.
     dir_compressed_data = './data/processed/climatebench/webapp/'
     filename_compressed_data = 'cache_climatebench_ssp245_baseline.pkl'
     if RUN_OFFLINE == True:
-        st.write('running offline. Change RUN_OFFLINE before commit to external.')
+        st.write('++++++++++++++++++++++++++++++++++++++++++')
+        st.write('WARNING running offline. Change RUN_OFFLINE before commit to external.')
+        st.write('++++++++++++++++++++++++++++++++++++++++++')
         cache = store_compressed_data(
             dir_compressed_data,
             filename_compressed_data)

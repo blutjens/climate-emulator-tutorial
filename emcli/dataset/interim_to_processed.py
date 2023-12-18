@@ -297,10 +297,11 @@ def interim_to_global_global(X_global_local, Y_global_local,
   assert input.shape[0] == target.shape[0], 'Error: inputs and target have different number of time steps'
 
   # Store input and target files as .npy
-  print('Saving processed data at: ', save_dir)
-  Path(save_dir).mkdir(parents=True, exist_ok=True)
-  np.save(save_dir + 'input.npy', input)
-  np.save(save_dir + 'target.npy', target)
+  if save_dir is not None:
+    print('Saving processed data at: ', save_dir)
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
+    np.save(save_dir + 'input.npy', input)
+    np.save(save_dir + 'target.npy', target)
 
   # Deprecated: Create list of time steps. Every time step contains one data dictionary.
   # data: list(

@@ -18,15 +18,3 @@ scikit-learn # for linear regression model and some data preprocessing
 regionmask # for plotting regional boundaries
 streamlit # for webdemo
 xskillscore # for error metrics on xarrays
-
-# status 10/2023: tested to run webapp. Not tested for climate_emulato_tutorial.ipynb
-#numpy
-#matplotlib
-#tqdm
-#cartopy
-#xarray
-#netcdf4
-#dask
-#tqdm
-#scikit-learn
-#streamlit
