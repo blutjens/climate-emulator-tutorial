@@ -18,6 +18,15 @@ ipython kernel install --user --name=emcli # Link conda environment to jupyter n
 jupyter notebook climate_emulator_tutorial.ipynb
 ```
 
+# Explore the demo
+```
+# Explore demo online at
+https://climate-emulator-tutorial.streamlit.app/
+# Develop demo locally with
+conda activate emcli
+streamlit run run_climate_pocket_webapp.py
+```
+
 ## Miscellanous likely irrelevant:
 ### Run hyperparameter search on server
 Note: this script has only been tested on a supercomputer at MIT. Modifications are likely necessary for other supercomputers.
