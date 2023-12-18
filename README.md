@@ -1,5 +1,7 @@
 # climate-emulator-tutorial
-A tutorial for getting started with machine learning for climate modeling
+A tutorial for getting started with machine learning for climate modeling. To read the tutorial go to:
+
+[climate_emulator_tutorial.ipynb](https://github.com/blutjens/climate-emulator-tutorial/blob/main/climate_emulator_tutorial.ipynb)
 
 # Installation
 ```
@@ -25,6 +27,17 @@ https://climate-emulator-tutorial.streamlit.app/
 # Develop demo locally with
 conda activate emcli
 streamlit run run_climate_pocket_webapp.py
+```
+
+# Reference
+```
+@misc{lutjens23climatetutorial,
+    author = {Lütjens, Björn and Hadzic, Lea M. and Newman, Dava and Veillette, Mark},
+    publisher = {AGU23 Fall Meeting},
+    title={The Climate Pocket: Tutorial on Building Fast Emulators in Climate Modeling},
+    year={2023},
+    url={https://agu.confex.com/agu/fm23/meetingapp.cgi/Paper/1304372}
+}
 ```
 
 ## Miscellanous likely irrelevant:

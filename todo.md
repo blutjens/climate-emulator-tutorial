@@ -11,6 +11,7 @@ publish ready:
     [x] clean requirements.txt , delete environment.yaml (making sure streamlit still works)
         -> yes, streamlit uses requirements.txt so we should be all good.
     [] ask Lea to review the tutorial
+    [x] update demo with disclaimer and 1850 reference.
     [] move fcnn, unet, etc. to either not be in dev branch and not in main (using proper git workflow) or move into archive/ folder
     [] move explore_xxx notebooks into dev branch
     [] fork dev branch into new climate-emulator-tutorial-private repo and delete from public repo.
