@@ -145,7 +145,7 @@ if __name__ == "__main__":
     cache = load_cache()
 
     st.write(f"""
-    ##### Today's global temperature increase since 1850 is ~{cache['tas_global_baseline']:.2f}°C.
+    In 2019, the global temperature increase from 1850 was approx. 1.07°C and we had already emitted 2390 gigatons of carbondioxide (GtCO2) [Src: IPCC AR6].
     ##### Set the cumulative CO2 emissions since 1850 (in GtCO2) to
     """)
 
