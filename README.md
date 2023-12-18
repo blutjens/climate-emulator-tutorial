@@ -1,7 +1,7 @@
 # climate-emulator-tutorial
 A tutorial for getting started with machine learning for climate modeling. To read the tutorial go to:
 
-[climate_emulator_tutorial.ipynb](https://github.com/blutjens/climate-emulator-tutorial/blob/main/climate_emulator_tutorial.ipynb)
+[climate_emulator_tutorial.ipynb](https://nbviewer.org/github/blutjens/climate-emulator-tutorial/blob/main/climate_emulator_tutorial.ipynb)
 
 # Installation
 ```
