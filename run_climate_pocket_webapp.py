@@ -139,6 +139,7 @@ if __name__ == "__main__":
 
     st.write("""
     # BC3 Climate Pocket: CO2 -> Temp.
+    This app is NOT ready for deployment and just a demo of ML-based climate emulators.
     """)
 
     # Get the data from the cache
