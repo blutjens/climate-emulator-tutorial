@@ -30,6 +30,7 @@ streamlit run run_climate_pocket_webapp.py
 ```
 
 # Reference
+You can read the abstract as pdf [here](docs/agu23_lutjens_tutorial_on_fast_climate_emulators.pdf).
 ```
 @misc{lutjens23climatetutorial,
     author = {Lütjens, Björn and Hadzic, Lea M. and Newman, Dava and Veillette, Mark},
