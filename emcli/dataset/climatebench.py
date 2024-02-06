@@ -116,13 +116,17 @@ def load_climatebench_data(
         # Concatenate with historical data in the case of scenario 'ssp126', 'ssp370' and 'ssp585'
         else:
             # load inputs
-            input_paths = [data_path + 'inputs_historical.nc', # ground-truth historical data, e.g., (165,)
-                           data_path + input_name] # future data, e.g., (86,)
-            input_xr = xr.open_mfdataset(input_paths).compute() 
+            input_paths = [data_path + input_name] # future data, e.g., (86,)
+            output_paths = [data_path + output_name]
+            if len_historical == 165:
+                # add ground-truth historical data, e.g., (165,))
+                input_paths.insert(0, data_path + 'inputs_historical.nc')
+                output_paths.insert(0, data_path + 'outputs_historical.nc')
+            elif len_historical != 0:
+                raise ValueError("len_historical must be 0 or 165")
 
-            # load outputs, taking average across ensemble members
-            output_paths = [data_path + 'outputs_historical.nc',
-                            data_path + output_name]
+            # Load in- and outputs
+            input_xr = xr.open_mfdataset(input_paths).compute() 
             output_xr = xr.open_mfdataset(output_paths)
 
         # Process precipitations
